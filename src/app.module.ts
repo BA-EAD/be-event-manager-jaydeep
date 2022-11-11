@@ -10,7 +10,6 @@ import { PreauthMiddleware } from './auth-new/preauth.middleware';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { appConfig } from './config';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 const rawBodyBuffer = (req, res, buf, encoding) => {
   if (buf && buf.length) {
@@ -21,20 +20,8 @@ const rawBodyBuffer = (req, res, buf, encoding) => {
 @Module({
   imports: [
     AuthModule,
-    // ConfigModule.forRootAsync(),
     ApiModule,
     MongooseModule.forRoot(appConfig.mongoUrl),
-    MailerModule.forRoot({
-      transport: {
-        service: 'smtp',
-        host: appConfig.host,
-        port: appConfig.port,
-        auth: {
-          user: appConfig.user,
-          pass: appConfig.pass,
-        },
-      },
-    }),
     MulterModule.register({ dest: './upload' }),
   ],
   controllers: [AppController],
