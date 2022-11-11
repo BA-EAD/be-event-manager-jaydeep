@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Ticket } from './ticket.model';
 
 @Injectable()
-export class TiketsService {
+export class TicketsService {
   constructor(
     @InjectModel('Ticket') private readonly TicketModule: Model<Ticket>,
   ) {}
@@ -12,8 +12,17 @@ export class TiketsService {
   // create ticket
   async create(ticket: Ticket): Promise<Ticket> {
     const newEvent = new this.TicketModule(ticket);
-    const prdct: any = await newEvent.save();
-    return prdct;
+    const save: any = await newEvent.save();
+    return save;
+  }
+
+  // update ticket
+  async update(ticket: Ticket): Promise<Ticket> {
+    const save: any = await this.TicketModule.updateOne(
+      { _id: ticket._id },
+      { $set: ticket },
+    );
+    return save;
   }
 
   // get all ticket list
@@ -23,6 +32,8 @@ export class TiketsService {
 
   // get ticket by id
   async getById(id: string): Promise<Ticket> {
-    return await this.TicketModule.findOne({ _id: id }).exec();
+    return await this.TicketModule.findOne({ _id: id })
+      .populate('event')
+      .exec();
   }
 }

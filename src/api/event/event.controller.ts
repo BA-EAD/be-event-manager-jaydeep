@@ -22,6 +22,7 @@ import { createEventScema } from './event.shema';
 import { JoiValidationPipe } from 'src/auth/joi.validation.pipe';
 import { UsePipes } from '@nestjs/common/decorators';
 import { Response } from 'express';
+import * as moment from 'moment';
 
 @Controller({
   path: 'event',
@@ -31,16 +32,14 @@ export class EventController {
   constructor(private readonly service: EventService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UsePipes(new JoiValidationPipe(createEventScema))
+  @UseGuards(JwtAuthGuard)
+  // @UsePipes(new JoiValidationPipe(createEventScema))
   @UseInterceptors(
-    FileInterceptor('upload', {
+    FileInterceptor('poster', {
       storage: diskStorage({
         destination: './upload',
-        filename: (req, file, callback) => {
-          const uniqecon = Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const fileName = `demo01${file.originalname}`; //`${uniqecon}${ext}`;
+        filename: (req, poster, callback) => {
+          const fileName = `${Date.now()}-${poster.originalname}`;
           callback(null, fileName);
         },
       }),
@@ -48,23 +47,21 @@ export class EventController {
   )
   async addEvent(
     @Body() eventData,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() poster: Express.Multer.File,
     @Res() res: Response,
   ): Promise<any> {
-    // var slug: string = eventData.slug;
-    // var name: string = eventData.name;
-    // var description: string = eventData.description;
-
-    // var start_date: Date = eventData.start_date;
-    // var end_date: Date = eventData.end_date;
-    // var tickets: any = eventData.tickets;
-    const ext = extname(file.originalname);
-
-    const fileName = `${new Date()}-${file.originalname}`;
-
-    eventData.poster = fileName; /// file name
-
     try {
+      eventData.poster = poster?.filename;
+      eventData.start_date = moment(eventData.start_date).utc(); // date convert to utc
+      eventData.end_date = moment(eventData.end_date).utc(); // date convert to utc
+
+      // slug validate
+      const event = await this.service.getBySlug(eventData.slug);
+      if (event && event._id) {
+        res.status(400).json({ message: 'Slug should be unique' });
+        return;
+      }
+
       const savedEvent = await this.service.addEvent(eventData);
       res.status(200).json(savedEvent);
     } catch (error: any) {
@@ -74,8 +71,8 @@ export class EventController {
 
   // get all events
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(FamilyRole.Admin, { list: true })
+  @UseGuards(JwtAuthGuard)
+  // @Roles(FamilyRole.Admin, { list: true })
   async loadAllEvets(@Req() req, @Res() res: Response): Promise<any> {
     try {
       const events = await this.service.getAllEvents();
@@ -87,9 +84,12 @@ export class EventController {
 
   // get Event by id
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(FamilyRole.Admin, { list: true })
-  async getEventByid(@Param('id') id: string, res: Response): Promise<any> {
+  @UseGuards(JwtAuthGuard)
+  // @Roles(FamilyRole.Admin, { list: true })
+  async getEventByid(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<any> {
     try {
       const event = await this.service.getById(id);
       res.json({ item: event });

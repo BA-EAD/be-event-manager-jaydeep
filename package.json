@@ -36,6 +36,7 @@
     "helmet": "^6.0.0",
     "joi": "^17.7.0",
     "localStorage": "^1.0.4",
+    "moment": "^2.29.4",
     "mongodb": "^4.11.0",
     "mongoose": "^6.6.5",
     "nestjs-joi": "^1.8.2",

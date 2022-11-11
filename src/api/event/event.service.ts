@@ -21,6 +21,11 @@ export class EventService {
   }
 
   // get event by id
+  async getBySlug(slug: string): Promise<Events> {
+    return await this.EventModule.findOne({ slug: slug }).exec();
+  }
+
+  // get event by id
   async getById(id: string): Promise<Events> {
     return await this.EventModule.findOne({ _id: id }).exec();
   }

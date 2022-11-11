@@ -3,12 +3,8 @@ import {
   Post,
   Get,
   Param,
-  Patch,
-  Put,
-  Delete,
   Body,
   UseGuards,
-  Query,
   Req,
   Res,
   UsePipes,
@@ -20,19 +16,19 @@ import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { createTicketScema } from './ticket.schema';
-import { TiketsService } from './tikets.service';
+import { TicketsService } from './tickets.service';
 
 @Controller({
-  path: 'tikets',
+  path: 'ticket',
   version: '1',
 })
 export class TiketsController {
-  constructor(private readonly service: TiketsService) {}
+  constructor(private readonly service: TicketsService) {}
 
   // get all ticket list
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new JoiValidationPipe(createTicketScema))
-  @UseGuards(JwtAuthGuard, RolesGuard)
   async addticket(@Body() ticketData, @Res() res: Response): Promise<any> {
     try {
       const savedTicket = await this.service.create(ticketData);
@@ -44,8 +40,8 @@ export class TiketsController {
 
   // get all ticket list
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(FamilyRole.Admin, FamilyRole.User, { list: true }) //  Role based auth permission
+  @UseGuards(JwtAuthGuard)
+  // @Roles(FamilyRole.Admin, FamilyRole.User, { list: true }) //  Role based auth permission
   async loadAllTickets(@Req() req, @Res() res: Response): Promise<any> {
     try {
       const users = await this.service.getAll();
@@ -57,8 +53,8 @@ export class TiketsController {
 
   // get ticket by id
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(FamilyRole.Admin, { list: true })
+  @UseGuards(JwtAuthGuard)
+  // @Roles(FamilyRole.Admin, { list: true })
   async getById(@Param('id') id: string, @Res() res: Response): Promise<any> {
     try {
       const ticket = await this.service.getById(id);

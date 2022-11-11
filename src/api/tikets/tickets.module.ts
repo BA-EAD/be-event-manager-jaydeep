@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TiketsController } from './tikets.controller';
-import { TiketsService } from './tikets.service';
+import { TiketsController } from './tickets.controller';
+import { TicketsService } from './tickets.service';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketSchema } from './ticket.model';
@@ -12,6 +12,6 @@ import { JwtService } from '@nestjs/jwt';
     AuthModule,
     MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
   ],
-  providers: [TiketsService, JwtService],
+  providers: [TicketsService, JwtService],
 })
 export class TiketsModule {}

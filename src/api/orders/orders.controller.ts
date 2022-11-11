@@ -3,15 +3,11 @@ import {
   Post,
   Get,
   Param,
-  Patch,
-  Put,
-  Delete,
   Body,
-  NotFoundException,
-  BadGatewayException,
   Req,
   Res,
   UseGuards,
+  Injectable,
 } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common/decorators';
 import { Response } from 'express';
@@ -20,26 +16,45 @@ import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
 import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
+import { TicketsService } from '../tikets/tickets.service';
 import { createOrderScema } from './Order.schema';
 import { OrdersService } from './orders.service';
 
-@Controller('orders')
+@Controller({
+  path: 'orders',
+  version: '1',
+})
+@Injectable()
 export class OrdersController {
-  constructor(private readonly service: OrdersService) {}
+  constructor(
+    private readonly service: OrdersService,
+    private readonly ticketService: TicketsService,
+  ) {}
 
   // create Order
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(FamilyRole.Admin, { create: true })
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new JoiValidationPipe(createOrderScema))
   async addNew(@Body() orderData, @Res() res: Response): Promise<any> {
-    // var owner: string = bodyData.owner;
-    // var event_tickets: string = bodyData.event_tickets;
-    // var date: Date = bodyData.date;
-    // var total_price: number = bodyData.total_price;
     try {
-      const placeOrder = await this.service.create(orderData);
-      res.status(200).json(placeOrder);
+      const ticket: any = await this.ticketService.getById(orderData.ticket);
+      if (ticket.event.end_date > new Date()) {
+        if (ticket.quantity >= orderData.quantity) {
+          const order: any = {
+            // owner: user._id,
+            ticket: ticket._id,
+            date: new Date(),
+            quantity: orderData.quantity,
+            total_price: ticket.price * orderData.quantity,
+          };
+          const placeOrder = await this.service.create(order);
+          ticket.quantity = ticket.quantity - orderData.quantity;
+          await this.ticketService.update(ticket);
+          res.status(200).json(placeOrder);
+        }
+      } else {
+        res.status(200).json({ message: 'Event is finished' });
+      }
     } catch (error: any) {
       res.status(400).json({ message: error.message, stack: error.stack });
     }

@@ -5,5 +5,5 @@ export const createTicketScema = joi.object({
   description: joi.string(),
   price: joi.number().required(),
   quantity: joi.number().required(),
-  event_id: joi.string().required(),
+  event: joi.string().required(),
 });

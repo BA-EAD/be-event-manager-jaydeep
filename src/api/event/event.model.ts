@@ -1,11 +1,11 @@
 import * as mongoose from 'mongoose';
 
 export const EventctSchema = new mongoose.Schema({
-  slug: {
+  name: {
     type: String,
     required: true,
   },
-  name: {
+  slug: {
     type: String,
     required: true,
   },
@@ -28,12 +28,22 @@ export const EventctSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+
+  updated_at: {
+    type: Date,
+    required: false,
+  },
 });
 
 export interface Events extends mongoose.Document {
   _id?: string;
-  slug: string;
   name: string;
+  slug: string;
   description: string;
   poster: string;
   start_date: string;

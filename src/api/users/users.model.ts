@@ -25,6 +25,14 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+  updated_at: {
+    type: Date,
+    required: false,
+  },
   role: { type: mongoose.Schema.Types.ObjectId, ref: 'Roles' },
 });
 

@@ -5,19 +5,33 @@ export const TicketSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   description: {
     type: String,
     required: false,
   },
+
   price: {
     type: Number,
     required: true,
   },
+
   quantity: {
     type: Number,
     required: true,
   },
-  event_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
+
+  event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
+
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+
+  updated_at: {
+    type: Date,
+    required: false,
+  },
 });
 
 export interface Ticket extends mongoose.Document {
@@ -26,5 +40,5 @@ export interface Ticket extends mongoose.Document {
   description: string;
   price: number;
   quantity: number;
-  event_id: string;
+  event: string;
 }

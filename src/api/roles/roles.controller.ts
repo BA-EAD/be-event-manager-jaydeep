@@ -16,8 +16,10 @@ import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { RolesService } from './roles.service';
-
-@Controller('roles')
+@Controller({
+  path: 'roles',
+  version: '1',
+})
 export class RolesController {
   constructor(private readonly service: RolesService) {}
 
