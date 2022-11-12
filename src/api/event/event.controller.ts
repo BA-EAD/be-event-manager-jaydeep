@@ -11,19 +11,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
-import { FamilyRole } from '../../auth/role.enum';
-import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { EventService } from './event.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { createEventScema } from './event.shema';
-import { JoiValidationPipe } from 'src/auth/joi.validation.pipe';
-import { UsePipes } from '@nestjs/common/decorators';
 import { Response } from 'express';
 import * as moment from 'moment';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('Events')
+@ApiBearerAuth()
 @Controller({
   path: 'event',
   version: '1',
@@ -31,9 +26,12 @@ import * as moment from 'moment';
 export class EventController {
   constructor(private readonly service: EventService) {}
 
+  @ApiOperation({
+    operationId: 'Create Event',
+    summary: 'Create an Event.',
+  })
   @Post()
   @UseGuards(JwtAuthGuard)
-  // @UsePipes(new JoiValidationPipe(createEventScema))
   @UseInterceptors(
     FileInterceptor('poster', {
       storage: diskStorage({
@@ -70,6 +68,10 @@ export class EventController {
   }
 
   // get all events
+  @ApiOperation({
+    operationId: 'Get all Events',
+    summary: 'Get all Events list.',
+  })
   @Get()
   @UseGuards(JwtAuthGuard)
   // @Roles(FamilyRole.Admin, { list: true })
@@ -83,6 +85,10 @@ export class EventController {
   }
 
   // get Event by id
+  @ApiOperation({
+    operationId: 'Get Event by id',
+    summary: 'Get Event from id.',
+  })
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   // @Roles(FamilyRole.Admin, { list: true })

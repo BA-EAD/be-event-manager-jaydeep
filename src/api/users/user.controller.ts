@@ -10,12 +10,13 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { JoiValidationPipe } from '../../auth/joi.validation.pipe';
+import { JoiValidationPipe } from '../../pipes/joi.validation.pipe';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
-import { RolesService } from '../roles/roles.service';
 import { createUserScema } from './user.shema';
 import { UsersService } from './users.service';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller({
   path: 'user',
   version: '1',
@@ -26,6 +27,10 @@ export class UserController {
   ) {}
 
   // create user
+  @ApiOperation({
+    operationId: 'Register User',
+    summary: 'Create an user account.',
+  })
   @Post()
   @UsePipes(new JoiValidationPipe(createUserScema))
   async signUp(@Body() userData, @Res() res: Response): Promise<any> {
@@ -38,6 +43,10 @@ export class UserController {
   }
 
   // get all users
+  @ApiOperation({
+    operationId: 'Get All User list',
+    summary: 'Get all user list',
+  })
   @Get()
   @UseGuards(JwtAuthGuard)
   async loadAllUsers(@Req() req, @Res() res: Response): Promise<any> {
@@ -50,6 +59,10 @@ export class UserController {
   }
 
   // get user by id
+  @ApiOperation({
+    operationId: 'Get user by id',
+    summary: 'Get user from id',
+  })
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getUserByid(@Param('id') id: string, res: Response): Promise<any> {

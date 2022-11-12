@@ -11,15 +11,16 @@ import {
 } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common/decorators';
 import { Response } from 'express';
-import { JoiValidationPipe } from 'src/auth/joi.validation.pipe';
+import { JoiValidationPipe } from 'src/pipes/joi.validation.pipe';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
 import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { TicketsService } from '../tickets/tickets.service';
 import { createOrderScema } from './Order.schema';
 import { OrdersService } from './orders.service';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('Orders')
+@ApiBearerAuth()
 @Controller({
   path: 'order',
   version: '1',
@@ -32,6 +33,10 @@ export class OrdersController {
   ) {}
 
   // create Order
+  @ApiOperation({
+    operationId: 'Create an Order',
+    summary: 'Place an Order.',
+  })
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new JoiValidationPipe(createOrderScema))
@@ -68,9 +73,12 @@ export class OrdersController {
   }
 
   // get all Order list
+  @ApiOperation({
+    operationId: 'Get all Orders',
+    summary: 'Get all Order list.',
+  })
   @Get()
   @UseGuards(JwtAuthGuard)
-  // @Roles(FamilyRole.Admin, { list: true })
   async loadAll(@Req() req, @Res() res: Response): Promise<any> {
     try {
       const orders = await this.service.getAll();
@@ -81,6 +89,10 @@ export class OrdersController {
   }
 
   // get order by id
+  @ApiOperation({
+    operationId: 'Get Order by id',
+    summary: 'Get Order from id.',
+  })
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, { list: true })

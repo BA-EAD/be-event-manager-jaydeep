@@ -2,7 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { DOCS_PATH } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -29,6 +31,16 @@ async function bootstrap() {
 
   //API enable cros
   app.enableCors();
+
+  const config = new DocumentBuilder()
+    .addBearerAuth()
+    .setTitle('Event Management')
+    .setDescription('The Event Management API description')
+    .setVersion('1.0')
+    .addTag('Event Management Apis ')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup(DOCS_PATH, app, document);
 
   await app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

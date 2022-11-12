@@ -10,14 +10,13 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { JoiValidationPipe } from '../../auth/joi.validation.pipe';
+import { JoiValidationPipe } from '../../pipes/joi.validation.pipe';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
-import { FamilyRole } from '../../auth/role.enum';
-import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { createTicketScema } from './ticket.schema';
 import { TicketsService } from './tickets.service';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('Tickets')
+@ApiBearerAuth()
 @Controller({
   path: 'ticket',
   version: '1',
@@ -25,7 +24,11 @@ import { TicketsService } from './tickets.service';
 export class TiketsController {
   constructor(private readonly service: TicketsService) {}
 
-  // get all ticket list
+  // Create Ticket
+  @ApiOperation({
+    operationId: 'Create Ticket',
+    summary: 'Create an Ticket.',
+  })
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new JoiValidationPipe(createTicketScema))
@@ -39,6 +42,10 @@ export class TiketsController {
   }
 
   // get all ticket list
+  @ApiOperation({
+    operationId: 'Get all Tickets',
+    summary: 'Get all Ticket list.',
+  })
   @Get()
   @UseGuards(JwtAuthGuard)
   // @Roles(FamilyRole.Admin, FamilyRole.User, { list: true }) //  Role based auth permission
@@ -52,6 +59,10 @@ export class TiketsController {
   }
 
   // get ticket by id
+  @ApiOperation({
+    operationId: 'Get Ticket by id',
+    summary: 'Get Ticket from id.',
+  })
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   // @Roles(FamilyRole.Admin, { list: true })
