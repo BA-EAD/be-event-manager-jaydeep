@@ -6,7 +6,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'], // loging options
   });
 
   const { PORT } = process.env;

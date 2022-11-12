@@ -7,14 +7,11 @@ import {
   Put,
   Delete,
   Body,
-  NotFoundException,
-  BadGatewayException,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
 import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { RolesService } from './roles.service';
 @Controller({
   path: 'roles',
@@ -24,7 +21,7 @@ export class RolesController {
   constructor(private readonly service: RolesService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, {
     create: true,
     delete: true,
@@ -36,12 +33,11 @@ export class RolesController {
     var type: string = bodyData.type;
     var permission: any = bodyData.permission;
     let requestObject = await this.service.create(name, type, permission);
-    // return {id:requestObject}
     return requestObject;
   }
   @Patch('/:id')
   @Put('/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, {
     create: true,
     delete: true,
@@ -59,21 +55,21 @@ export class RolesController {
     return null;
   }
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, {
     create: true,
     delete: true,
     update: true,
     list: true,
   })
-  async loadAllTickets(): Promise<any> {
+  async loadAll(): Promise<any> {
     let requestObject = await this.service.getAll();
     if (requestObject) return { ...requestObject };
     return { status: 400, data: requestObject, Message: 'No data found' };
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, {
     create: true,
     delete: true,
@@ -86,7 +82,7 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(FamilyRole.Admin, {
     create: true,
     delete: true,
