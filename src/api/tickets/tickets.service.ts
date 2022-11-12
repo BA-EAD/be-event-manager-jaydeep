@@ -27,12 +27,12 @@ export class TicketsService {
 
   // get all ticket list
   async getAll() {
-    return await this.TicketModule.find().exec();
+    return await this.TicketModule.find().populate('event').exec();
   }
 
   // get ticket by id
-  async getById(id: string): Promise<Ticket> {
-    return await this.TicketModule.findOne({ _id: id })
+  async getById(_id: string): Promise<Ticket> {
+    return await this.TicketModule.findOne({ _id: _id })
       .populate('event')
       .exec();
   }

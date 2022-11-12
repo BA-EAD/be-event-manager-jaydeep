@@ -13,5 +13,6 @@ import { JwtService } from '@nestjs/jwt';
     MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
   ],
   providers: [TicketsService, JwtService],
+  exports: [TicketsService],
 })
 export class TiketsModule {}

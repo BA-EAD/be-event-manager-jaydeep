@@ -20,12 +20,18 @@ export class OrdersService {
 
   // get all order list
   async getAll() {
-    return await this.OrderModule.find().exec();
+    return await this.OrderModule.find()
+      .populate('owner')
+      .populate('ticket')
+      .exec();
   }
 
   // get order by id
   async getById(id: string): Promise<Orders> {
-    return await this.OrderModule.findOne({ _id: id }).exec();
+    return await this.OrderModule.findOne({ _id: id })
+      .populate('owner')
+      .populate('ticket')
+      .exec();
   }
   // get order by id
   async getUserFromToken(token: string): Promise<any> {
