@@ -1,3 +1,4 @@
+import { string } from 'joi';
 import * as mongoose from 'mongoose';
 
 export const UserSchema = new mongoose.Schema({
@@ -25,6 +26,11 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  otp:{
+    type: String,
+    required: false,
+    default: null,
+  },
   created_at: {
     type: Date,
     default: Date.now,
@@ -41,6 +47,7 @@ export interface User extends mongoose.Document {
   username?: string;
   mobile?: number;
   email?: string;
+  otp?:string;
   password?: string;
   full_name?: string;
   nationality?: string;

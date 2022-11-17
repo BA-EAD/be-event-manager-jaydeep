@@ -13,12 +13,12 @@ const rawBodyBuffer = (req, res, buf, encoding) => {
     req.rawBody = buf.toString(encoding || 'utf8');
   }
 };
-
+const { MONGODB_URI } = process.env;
 @Module({
   imports: [
     AuthModule,
     ApiModule,
-    MongooseModule.forRoot(appConfig.mongoUrl),
+    MongooseModule.forRoot(MONGODB_URI),
     MulterModule.register({ dest: './upload' }),
   ],
   controllers: [AppController],

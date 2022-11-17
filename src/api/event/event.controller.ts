@@ -16,7 +16,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
 import * as moment from 'moment';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { evemtSchemaDto } from './event.shema.dto';
 @ApiTags('Events')
 @ApiBearerAuth()
 @Controller({
@@ -26,11 +27,17 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class EventController {
   constructor(private readonly service: EventService) {}
 
-  @ApiOperation({
-    operationId: 'Create Event',
-    summary: 'Create an Event.',
-  })
+
   @Post()
+  @ApiOperation({
+    operationId: 'Create User Event',
+    summary: 'Create  User Event.',
+  })
+  @ApiBody({
+    type: evemtSchemaDto,
+    description: 'Create event',
+  })
+    
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('poster', {

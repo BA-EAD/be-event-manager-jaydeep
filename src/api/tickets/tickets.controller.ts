@@ -14,7 +14,8 @@ import { JoiValidationPipe } from '../../pipes/joi.validation.pipe';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
 import { createTicketScema } from './ticket.schema';
 import { TicketsService } from './tickets.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ticketSchemaDto } from './ticket.schema.dto';
 @ApiTags('Tickets')
 @ApiBearerAuth()
 @Controller({
@@ -28,6 +29,10 @@ export class TiketsController {
   @ApiOperation({
     operationId: 'Create Ticket',
     summary: 'Create an Ticket.',
+  })
+  @ApiBody({
+    type: ticketSchemaDto,
+    description: 'Ticket data structure',
   })
   @Post()
   @UseGuards(JwtAuthGuard)

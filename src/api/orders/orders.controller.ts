@@ -11,14 +11,15 @@ import {
 } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common/decorators';
 import { Response } from 'express';
-import { JoiValidationPipe } from 'src/pipes/joi.validation.pipe';
+import { JoiValidationPipe } from '../../pipes/joi.validation.pipe';
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard';
 import { FamilyRole } from '../../auth/role.enum';
 import { Roles } from '../../auth/roles.decorator';
 import { TicketsService } from '../tickets/tickets.service';
 import { createOrderScema } from './Order.schema';
 import { OrdersService } from './orders.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { orderSchemaDto } from './order.schema.dto';
 @ApiTags('Orders')
 @ApiBearerAuth()
 @Controller({
@@ -36,6 +37,10 @@ export class OrdersController {
   @ApiOperation({
     operationId: 'Create an Order',
     summary: 'Place an Order.',
+  })
+  @ApiBody({
+    type: orderSchemaDto,
+    description: 'Order data structure',
   })
   @Post()
   @UseGuards(JwtAuthGuard)
